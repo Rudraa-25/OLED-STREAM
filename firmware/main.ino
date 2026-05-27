@@ -1,11 +1,14 @@
 /*
   OLED-STREAM: Main Firmware for Xiao ESP32-S3
-  Hardware: Xiao ESP32-S3 + 0.96" SSD1306 OLED Display
   
-  I2C Pins:
-  - SDA: GPIO 4
-  - SCL: GPIO 5
-  - OLED Address: 0x3C
+  Hardware: 
+  - Microcontroller: Xiao ESP32-S3
+  - Display: 0.96" SSD1306 OLED (128x64)
+  
+  CORRECT I2C Pinout for Xiao ESP32-S3:
+  - SDA: GPIO 5 (D4 on board)
+  - SCL: GPIO 6 (D5 on board)
+  - Address: 0x3C
 */
 
 #include "OLEDManager.h"
@@ -16,45 +19,65 @@ OLEDManager oledManager;
 void setup() {
   // Initialize Serial for debugging
   Serial.begin(115200);
-  delay(100);
+  delay(500);
   
-  Serial.println("\n\n=== OLED-STREAM Starting ===");
-  Serial.println("Hardware: Xiao ESP32-S3 + 0.96\" OLED");
+  Serial.println("\n\n╔════════════════════════════════════╗");
+  Serial.println("║   OLED-STREAM Starting             ║");
+  Serial.println("║   Xiao ESP32-S3 + 0.96\" OLED       ║");
+  Serial.println("╚════════════════════════════════════╝");
+  Serial.println();
+  
+  Serial.println("I2C Configuration:");
+  Serial.println("  SDA: GPIO 5 (D4)");
+  Serial.println("  SCL: GPIO 6 (D5)");
+  Serial.println("  Freq: 400kHz");
+  Serial.println("  Address: 0x3C");
+  Serial.println();
   Serial.println("Initializing OLED Display...");
   
   // Initialize OLED display
   if (!oledManager.begin()) {
-    Serial.println("ERROR: OLED initialization failed!");
+    Serial.println("✗ OLED initialization FAILED!");
+    Serial.println("Please check:");
+    Serial.println("  1. Wiring connections (SDA, SCL)");
+    Serial.println("  2. Pull-up resistors (4.7k ohm)");
+    Serial.println("  3. OLED I2C address");
     while (1) {
-      delay(100); // Halt if OLED fails
+      delay(1000);
     }
   }
   
-  Serial.println("✓ OLED initialized successfully");
+  Serial.println("✓ OLED initialized successfully!");
+  Serial.println();
   
   // Display startup message
-  oledManager.displayMessage("OLED-STREAM Ready\nWaiting for input...");
+  oledManager.displayMessage("Xiao ESP32-S3\n0.96 OLED Ready!");
   delay(2000);
 }
 
 void loop() {
-  // Show connecting animation
-  Serial.println("Showing connection animation...");
+  // Test 1: Show connecting animation
+  Serial.println("[1/3] Showing connection animation...");
   oledManager.showConnectingAnimation();
-  delay(1000);
+  delay(2000);
   
-  // Show playing animation
-  Serial.println("Showing playback animation...");
+  // Test 2: Show playing animation
+  Serial.println("[2/3] Showing playback animation...");
   oledManager.showPlayingAnimation();
-  delay(1000);
+  delay(2000);
   
-  // Display FPS info
-  char fpsBuffer[32];
-  sprintf(fpsBuffer, "FPS: %d", oledManager.getFPS());
-  oledManager.displayMessage(fpsBuffer);
+  // Test 3: Display FPS and test pattern
+  Serial.println("[3/3] Displaying FPS info...");
+  char buffer[32];
+  sprintf(buffer, "FPS: %d", oledManager.getFPS());
+  oledManager.displayMessage(buffer);
   
   Serial.print("Current FPS: ");
   Serial.println(oledManager.getFPS());
+  delay(2000);
   
+  // Test 4: Clear display
+  Serial.println("Clearing display...");
+  oledManager.clear();
   delay(500);
 }
